@@ -4,9 +4,8 @@ FROM python:3.11-slim
 # Install system dependencies for Chromium and ChromeDriver
 RUN apt-get update && apt-get install -y \
     chromium \
-    chromium-driver \
+    chromium-chromedriver \
     && rm -rf /var/lib/apt/lists/*
-
 
 # Set working directory
 WORKDIR /app
