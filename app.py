@@ -4,6 +4,9 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, NoSuchElementException, StaleElementReferenceException
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+
 import pandas as pd
 import time
 from itertools import permutations
@@ -29,15 +32,23 @@ cities = [
 #city_pairs = list(permutations(cities, 2))
 
 # Set up Chrome WebDriver with improved options
-def setup_driver(driver_path='C:\\Users\\polak\\Downloads\\chromedriver-win64\\chromedriver-win64\\chromedriver.exe'):
-    options = webdriver.ChromeOptions()
+def setup_driver():
+    options = Options()
     options.add_argument('--disable-blink-features=AutomationControlled')  # Avoid detection as bot
-    options.add_argument('--headless')  # Run in headless mode (optional: remove to see browser)
-    options.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/133.0.6943.142')
+    options.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36')
     options.add_argument('--window-size=1920,1080')
-    service = Service(driver_path)
-    return webdriver.Chrome(service=service, options=options)
 
+    # Check if running on Render
+    if os.getenv('RENDER'):  # Render sets this environment variable
+        options.add_argument('--headless')  # Required for Render (no GUI)
+        options.binary_location = "/usr/bin/chromium-browser"  # Path to Chromium on Render
+        service = Service("/usr/bin/chromedriver")  # Path to ChromeDriver on Render
+    else:
+        # Local Windows environment
+        driver_path = 'C:\\Users\\polak\\Downloads\\chromedriver-win64\\chromedriver-win64\\chromedriver.exe'
+        service = Service(driver_path)
+
+    return webdriver.Chrome(service=service, options=options)
 # Select today's date
 def select_date(driver):
     wait = WebDriverWait(driver, 10)
