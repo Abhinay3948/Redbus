@@ -31,7 +31,7 @@ def setup_driver():
     if os.getenv('RENDER'):
         print("Setting up headless Chrome for Render...")
         options.add_argument('--headless')
-        options.add_argument('--disable-dev-shm-usage')  # Avoid shared memory issues
+        options.add_argument('--disable-dev-shm-usage')  # Avoid memory issues
         options.add_argument('--no-sandbox')  # Required for Render
         options.binary_location = "/usr/bin/chromium-browser"
         service = Service("/usr/bin/chromedriver")
@@ -356,4 +356,4 @@ def predict():
 
 # ### Main Execution
 if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+    app.run(debug=True, port=5001)
