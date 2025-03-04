@@ -21,6 +21,7 @@ import time
 app = Flask(__name__)
 
 # ### WebDriver Setup
+# In app.py, update the setup_driver function
 def setup_driver():
     """Set up Chrome WebDriver with options for local and Render environments."""
     options = Options()
@@ -33,8 +34,8 @@ def setup_driver():
         options.add_argument('--headless')
         options.add_argument('--disable-dev-shm-usage')  # Avoid memory issues
         options.add_argument('--no-sandbox')  # Required for Render
-        options.binary_location = "/usr/bin/chromium-browser"
-        service = Service("/usr/bin/chromedriver")
+        options.binary_location = "/usr/bin/chromium"  # Updated path
+        service = Service("/usr/bin/chromium-chromedriver")  # Updated service path
     else:
         print("Setting up local Chrome driver...")
         driver_path = 'C:\\Users\\polak\\Downloads\\chromedriver-win64\\chromedriver-win64\\chromedriver.exe'  # Adjust this path for your local setup
@@ -318,6 +319,7 @@ def home():
     print("Serving home page...")
     return render_template('index.html')
 
+
 @app.route('/predict', methods=['POST'])
 def predict():
     """Handle form submission, scrape data, process with ML, and display results."""
@@ -330,8 +332,8 @@ def predict():
         print("Starting scraping...")
         df, date_str = scrape_city_pair(source, destination)
         if df is None or df.empty:
-            print("No bus data found.")
-            return "No bus data found for this route.", 404
+            print("No bus data found or scraping failed.")
+            return "No bus data found or scraping failed. Check logs for details.", 500
         
         print("Scraping completed. Processing ML model...")
         df_result = process_ml(df)
