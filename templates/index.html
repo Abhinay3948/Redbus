@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travel Optimizer for RedBus</title>
+    <style>
+        :root {
+            --primary-color: rgb(216, 78, 85);
+            --secondary-color: #2ecc71;
+            --dark-color: #2c3e50;
+            --light-color: #ecf0f1;
+            --accent-color: #e74c3c;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --border-radius: 8px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Times New Roman', Times, serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 500px;
+            overflow: hidden;
+        }
+        
+        .header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .header h2 {
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .header p {
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+        
+        .header .logo {
+            max-width: 100px;
+            margin: 0 auto 15px;
+            display: block;
+        }
+        
+        .form-container {
+            padding: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark-color);
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: all 0.3s;
+            font-family: 'Times New Roman', Times, serif;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(216, 78, 85, 0.2);
+            outline: none;
+        }
+        
+        .form-group .icon {
+            position: absolute;
+            right: 15px;
+            top: 40px;
+            color: #7f8c8d;
+        }
+        
+        .swap-btn {
+            background-color: var(--primary-color);
+            border: none;
+            color: white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            margin: 0 auto;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s, background-color 0.3s;
+        }
+        
+        .swap-btn:hover {
+            opacity: 0.9;
+            transform: rotate(180deg);
+        }
+        
+        .classification-options {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .classification-option {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: var(--border-radius);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .classification-option:hover {
+            border-color: var(--primary-color);
+        }
+        
+        .classification-option.active {
+            border-color: var(--primary-color);
+            background-color: rgba(216, 78, 85, 0.1);
+        }
+        
+        .submit-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            width: 100%;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            text-align: center;
+        }
+        
+        .submit-btn:hover {
+            opacity: 0.9;
+        }
+        
+        .suggestion-list {
+            max-height: 200px;
+            overflow-y: auto;
+            position: absolute;
+            width: 100%;
+            background: white;
+            border: 1px solid #ddd;
+            border-top: none;
+            border-radius: 0 0 var(--border-radius) var(--border-radius);
+            z-index: 10;
+            display: none;
+        }
+        
+        .suggestion-item {
+            padding: 10px 15px;
+            cursor: pointer;
+        }
+        
+        .suggestion-item:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .popular-routes {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+        }
+        
+        .popular-routes h4 {
+            margin-bottom: 10px;
+            color: var(--dark-color);
+        }
+        
+        .route-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .route-chip {
+            background-color: rgba(216, 78, 85, 0.1);
+            border: 1px solid rgba(216, 78, 85, 0.3);
+            color: var(--primary-color);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .route-chip:hover {
+            background-color: rgba(216, 78, 85, 0.2);
+        }
+        
+        .datepicker-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+        
+        .datepicker-field {
+            flex: 1;
+        }
+        
+        .promo-section {
+            margin-top: 25px;
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .promo-section h4 {
+            color: var(--primary-color);
+            margin-bottom: 8px;
+        }
+        
+        .promo-section p {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .promo-code {
+            background-color: rgba(216, 78, 85, 0.1);
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        @media (max-width: 480px) {
+            .classification-options {
+                flex-direction: column;
+            }
+            
+            .form-container {
+                padding: 20px;
+            }
+            
+            .datepicker-container {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="/api/placeholder/200/80" alt="RedBus Logo" class="logo">
+            <h2>Travel Optimizer for RedBus</h2>
+            <p>Travel luxuriously, explore limitlessly.</p>
+        </div>
+        
+        <div class="form-container">
+            <form action="/predict" method="post" id="tripForm">
+                <div class="form-group">
+                    <label for="source">From:</label>
+                    <input type="text" id="source" name="source" placeholder="Enter departure city" required autocomplete="off">
+                    <div class="icon">📍</div>
+                    <div class="suggestion-list" id="sourceSuggestions"></div>
+                </div>
+                
+                <div class="swap-btn" id="swapLocations">
+                    ↕️
+                </div>
+                
+                <div class="form-group">
+                    <label for="destination">To:</label>
+                    <input type="text" id="destination" name="destination" placeholder="Enter destination city" required autocomplete="off">
+                    <div class="icon">🏁</div>
+                    <div class="suggestion-list" id="destSuggestions"></div>
+                </div>
+                
+                <div class="datepicker-container">
+                    <div class="form-group datepicker-field">
+                        <label for="journey_date">Journey Date:</label>
+                        <input type="date" id="journey_date" name="journey_date" required>
+                    </div>
+                    
+                    <div class="form-group datepicker-field">
+                        <label for="return_date">Return Date (Optional):</label>
+                        <input type="date" id="return_date" name="return_date">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Trip Preference:</label>
+                    <input type="hidden" id="trip_classification" name="trip_classification" value="Budget Friendly">
+                    
+                    <div class="classification-options">
+                        <div class="classification-option active" data-value="Budget Friendly">
+                            <div>Budget Friendly</div>
+                        </div>
+                        <div class="classification-option" data-value="Time Saving">
+                            <div>Time Saving</div>
+                        </div>
+                        <div class="classification-option" data-value="Budget Friendly and Time Saving">
+                            <div>Balanced</div>
+                        </div>
+                        <div class="classification-option" data-value="Expensive">
+                            <div>Expensive</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button type="submit" class="submit-btn">
+                    Search
+                </button>
+                
+                <div class="promo-section">
+                    <h4>Special Offer</h4>
+                    <p>Use coupon code for 15% off on your first booking</p>
+                    <span class="promo-code">NEWUSER15</span>
+                </div>
+                
+                <div class="popular-routes">
+                    <h4>Popular Routes</h4>
+                    <div class="route-chips">
+                        <div class="route-chip" data-source="Mumbai" data-dest="Pune">Mumbai → Pune</div>
+                        <div class="route-chip" data-source="Delhi" data-dest="Jaipur">Delhi → Jaipur</div>
+                        <div class="route-chip" data-source="Bangalore" data-dest="Chennai">Bangalore → Chennai</div>
+                        <div class="route-chip" data-source="Hyderabad" data-dest="Bangalore">Hyderabad → Bangalore</div>
+                        <div class="route-chip" data-source="Kolkata" data-dest="Siliguri">Kolkata → Siliguri</div>
+                        <div class="route-chip" data-source="Ahmedabad" data-dest="Mumbai">Ahmedabad → Mumbai</div>
+                        <div class="route-chip" data-source="Chennai" data-dest="Coimbatore">Chennai → Coimbatore</div>
+                        <div class="route-chip" data-source="Pune" data-dest="Goa">Pune → Goa</div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Sample Indian cities for autocomplete
+        const cities = [
+            "Mumbai", "Delhi", "Bangalore", "Hyderabad", "Chennai", 
+            "Kolkata", "Ahmedabad", "Pune", "Jaipur", "Lucknow",
+            "Kanpur", "Nagpur", "Indore", "Thane", "Bhopal",
+            "Visakhapatnam", "Patna", "Vadodara", "Ghaziabad", "Ludhiana",
+            "Agra", "Nashik", "Faridabad", "Meerut", "Rajkot", 
+            "Varanasi", "Srinagar", "Aurangabad", "Dhanbad", "Amritsar",
+            "Allahabad", "Ranchi", "Howrah", "Coimbatore", "Jabalpur",
+            "Guwahati", "Vijayawada", "Jodhpur", "Madurai", "Raipur",
+            "Kochi", "Chandigarh", "Goa", "Mysore", "Dehradun",
+            "Shimla", "Rishikesh", "Udaipur", "Darjeeling", "Siliguri",
+            "Amritsar", "Trivandrum", "Ooty", "Pondicherry", "Tirupati"
+        ];
+        
+        // DOM Elements
+        const sourceInput = document.getElementById('source');
+        const destInput = document.getElementById('destination');
+        const sourceSuggestions = document.getElementById('sourceSuggestions');
+        const destSuggestions = document.getElementById('destSuggestions');
+        const swapBtn = document.getElementById('swapLocations');
+        const classOptions = document.querySelectorAll('.classification-option');
+        const tripClassification = document.getElementById('trip_classification');
+        const routeChips = document.querySelectorAll('.route-chip');
+        
+        // Set today's date as minimum date for the date inputs
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('journey_date').min = today;
+        document.getElementById('return_date').min = today;
+        
+        // Set default journey date to today
+        document.getElementById('journey_date').value = today;
+        
+        // Handle swap button
+        swapBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const tempValue = sourceInput.value;
+            sourceInput.value = destInput.value;
+            destInput.value = tempValue;
+        });
+        
+        // Setup class options
+        classOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                // Remove active class from all options
+                classOptions.forEach(opt => opt.classList.remove('active'));
+                
+                // Add active class to clicked option
+                this.classList.add('active');
+                
+                // Update hidden input value
+                tripClassification.value = this.dataset.value;
+            });
+        });
+        
+        // Setup popular route chips
+        routeChips.forEach(chip => {
+            chip.addEventListener('click', function() {
+                sourceInput.value = this.dataset.source;
+                destInput.value = this.dataset.dest;
+            });
+        });
+        
+        // Setup autocomplete for source
+        setupAutocomplete(sourceInput, sourceSuggestions);
+        
+        // Setup autocomplete for destination
+        setupAutocomplete(destInput, destSuggestions);
+        
+        function setupAutocomplete(input, suggestionList) {
+            // Show suggestions when input is focused
+            input.addEventListener('focus', function() {
+                const value = this.value.toLowerCase();
+                if (value.length > 0) {
+                    showSuggestions(input, suggestionList);
+                }
+            });
+            
+            // Update suggestions as user types
+            input.addEventListener('input', function() {
+                showSuggestions(input, suggestionList);
+            });
+            
+            // Hide suggestions when clicking outside
+            document.addEventListener('click', function(e) {
+                if (e.target !== input && e.target !== suggestionList) {
+                    suggestionList.style.display = 'none';
+                }
+            });
+        }
+        
+        function showSuggestions(input, suggestionList) {
+            const value = input.value.toLowerCase();
+            
+            // Clear previous suggestions
+            suggestionList.innerHTML = '';
+            
+            if (value.length === 0) {
+                suggestionList.style.display = 'none';
+                return;
+            }
+            
+            // Filter cities based on input value
+            const filteredCities = cities.filter(city => 
+                city.toLowerCase().includes(value)
+            );
+            
+            if (filteredCities.length > 0) {
+                filteredCities.forEach(city => {
+                    const item = document.createElement('div');
+                    item.classList.add('suggestion-item');
+                    item.textContent = city;
+                    
+                    // Select suggestion on click
+                    item.addEventListener('click', function() {
+                        input.value = city;
+                        suggestionList.style.display = 'none';
+                    });
+                    
+                    suggestionList.appendChild(item);
+                });
+                
+                suggestionList.style.display = 'block';
+            } else {
+                suggestionList.style.display = 'none';
+            }
+        }
+        
+        // Ensure return date is after journey date
+        document.getElementById('journey_date').addEventListener('change', function() {
+            const returnDateInput = document.getElementById('return_date');
+            if (returnDateInput.value && returnDateInput.value < this.value) {
+                returnDateInput.value = this.value;
+            }
+            returnDateInput.min = this.value;
+        });
+    </script>
+</body>
+</html>

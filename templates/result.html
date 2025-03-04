@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RedBus Trip Prediction Results</title>
+  <style>
+    /* Color and transparency variables inspired by the CodePen */
+    :root {
+      --primary-purple: #7e22ce;
+      --primary-green: #22c55e;
+      --hover-green: #16a34a;
+      --heading-color: #0f172a;
+      --paragraph-color: #334155;
+      --white: #ffffff;
+      --transparent-bg: rgba(255, 255, 255, 0.2);
+      --glass-bg: rgba(255, 255, 255, 0.2);
+      --card-bg: rgba(255, 255, 255, 0.8);
+      --border-radius: 10px;
+      --shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+    }
+    
+    /* Body with a background image from static folder */
+    body {
+      background: url("{{ url_for('static', filename='pexels-resourceboy-18541712.jpg') }}") no-repeat center center fixed;
+      background-size: cover;
+      font: 1em/1.618 Inter,sans-serif;
+      color: #224;
+      margin: 0;
+      padding: 20px;
+      
+    }
+    
+    /* Main container with glassmorphism effect */
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      padding: 20px;
+    }
+    
+    /* Header Section */
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #446;
+      
+    }
+    .header h2 {
+      margin-bottom: 5px;
+      color: #446;
+      justify-content: space-between;
+      font-weight: 600;
+      font-size: 1.8rem;
+    }
+    .header p {
+      color:  #446;
+      justify-content: space-between;
+      font-size: 1rem;
+    }
+    
+    /* Info Section */
+    .info {
+      text-align: center;
+      justify-content: space-between;
+      margin-bottom: 30px;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.22);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+    }
+    .info p {
+      margin: 5px 0;
+      font-size: 1.1rem;
+      color:  #446;
+    }
+    
+    /* Card container layout */
+    .card-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+    }
+    
+    /* Card Style with transparent glass effect */
+    .card {
+      width: 300px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      transition: 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      padding: 20px;
+      
+    }
+    .card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    }
+    
+    .card-header {
+      background: linear-gradient(45deg, var(--primary-purple), var(--primary-green));
+      padding: 15px;
+      color: var(--white);
+    }
+    .card-header h3 {
+      margin: 0;
+      font-size: 1.2rem;
+    }
+    
+    .card-body {
+      padding: 20px;
+      flex-grow: 1;
+    }
+    .card-body p {
+      margin: 10px 0;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: var(--paragraph-color);
+    }
+    
+    .card-footer {
+      padding: 15px 20px;
+      background: rgba(255, 255, 255, 0.4);
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+      font-weight: bold;
+      font-size: 1rem;
+      color: var(--primary-green);
+      text-align: right;
+    }
+    
+    /* Back button styling */
+    .back-btn {
+      display: block;
+      width: 160px;
+      margin: 30px auto 0;
+      padding: 12px 20px;
+      background-color: var(--primary-green);
+      color: var(--white);
+      text-align: center;
+      text-decoration: none;
+      border-radius: 25px;
+      transition: background 0.3s ease;
+      font-weight: 500;
+    }
+    .back-btn:hover {
+      background-color: var(--hover-green);
+    }
+    
+    @media (max-width: 768px) {
+      .card {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h2>Travel Optimizer Results</h2>
+      <p>The best options for your journey</p>
+    </div>
+    
+    <div class="info">
+      <p><strong>Route:</strong> {{ source }} to {{ destination }}</p>
+      <p><strong>Journey Date:</strong> {{ journey_date }}</p>
+      <p><strong>Trip Preference:</strong> {{ trip_classification }}</p>
+    </div>
+    
+    <div class="card-container">
+      {% for bus in results %}
+      <div class="card">
+        <div class="card-header">
+          <h3>{{ bus['Bus Operator'] }}</h3>
+        </div>
+        <div class="card-body">
+          <p><strong>Departure:</strong> {{ bus['Departure Time'] }}</p>
+          <p><strong>Arrival:</strong> {{ bus['Arrival Time'] }}</p>
+          <p><strong>Duration:</strong> {{ bus['Journey Duration'] }}</p>
+          <p><strong>Bus Type:</strong> {{ bus['Bus Type'] }}</p>
+          <p><strong>Seats:</strong> {{ bus['Available Seats'] }}</p>
+        </div>
+        <div class="card-footer">
+          ₹{{ bus['Ticket Price'] }}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    
+    <a href="/" class="back-btn">Back to Search</a>
+  </div>
+</body>
+</html>
